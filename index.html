@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Freud's Psychosexual Theory | MCN Review | Pillitteri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        .transition-all { transition: all 0.3s ease; }
+        .recall-mode .reveal-text {
+            background-color: #cbd5e1;
+            color: transparent;
+            border-radius: 0.375rem;
+            padding: 0 0.25rem;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            box-shadow: inset 0 0 0 1px #94a3b8;
+        }
+        .recall-mode .reveal-text:hover,
+        .recall-mode .reveal-text.revealed {
+            background-color: #fbcfe8;
+            color: #1e293b;
+            box-shadow: none;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #db2777; border-radius: 8px; }
+        .content-section { animation: fade 0.3s ease; }
+        @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .quiz-feedback-correct { background-color: #dcfce7; border-left: 4px solid #22c55e; }
+        .quiz-feedback-wrong { background-color: #fee2e2; border-left: 4px solid #ef4444; }
+        .locked-section { opacity: 0.6; cursor: not-allowed; pointer-events: none; }
+        .flashcard {
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .flashcard:hover { transform: translateY(-5px); }
+        .flashcard-front, .flashcard-back { transition: opacity 0.3s; }
+        .timeline-bar { background: linear-gradient(90deg, #fbcfe8, #f472b6); height: 12px; border-radius: 6px; margin: 1rem 0; }
+        .stage-badge { background: #db2777; color: white; border-radius: 9999px; padding: 0.25rem 1rem; font-weight: bold; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { freud: { light: '#fce7f3', DEFAULT: '#db2777', dark: '#9d174d' } } } }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 h-screen flex flex-col md:flex-row font-sans text-slate-800 overflow-hidden">
+
+    <!-- Mobile Header -->
+    <div class="md:hidden bg-freud-dark text-white p-4 flex justify-between items-center shadow-md z-30 shrink-0">
+        <button onclick="toggleMobileMenu()" class="text-white focus:outline-none z-40">
+            <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+        <h1 class="font-bold text-lg absolute left-1/2 transform -translate-x-1/2 pointer-events-none">
+            <i class="fa-solid fa-brain mr-2"></i> Freud's Theory
+        </h1>
+        <div class="w-8"></div>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <nav id="sidebar" class="hidden md:flex flex-col w-full md:w-80 bg-white shadow-2xl h-full absolute md:relative z-30 transition-transform duration-300 shrink-0 border-r border-slate-200">
+        <div class="p-6 bg-gradient-to-br from-freud-dark to-freud text-white hidden md:block shrink-0">
+            <h1 class="font-black text-2xl tracking-wide"><i class="fa-regular fa-hand-peace mr-2"></i> Freud's Psychosexual Theory</h1>
+            <p class="text-sm text-pink-200 mt-1 font-medium">Adele Pillitteri · MCN</p>
+        </div>
+        <div class="flex-1 overflow-y-auto py-4">
+            <ul class="space-y-1 text-sm font-medium">
+                <li><button onclick="showSection('home')" id="btn-home" class="nav-btn w-full text-left px-6 py-3 bg-freud-light text-freud-dark border-r-4 border-freud-dark transition-colors"><i class="fa-solid fa-house w-6 nav-icon"></i><i class="fa-solid fa-lock w-6 hidden"></i> Home / Start</button></li>
+                <li><button onclick="showSection('overview')" id="btn-overview" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-chart-simple w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Overview & Key Concepts</button></li>
+                <li><button onclick="showSection('oral')" id="btn-oral" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-face-smile w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Oral Stage (0–1 year)</button></li>
+                <li><button onclick="showSection('anal')" id="btn-anal" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-toilet w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Anal Stage (1–3 years)</button></li>
+                <li><button onclick="showSection('phallic')" id="btn-phallic" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-baby-carriage w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Phallic Stage (3–6 years)</button></li>
+                <li><button onclick="showSection('latency')" id="btn-latency" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-school w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Latency Stage (6–12 years)</button></li>
+                <li><button onclick="showSection('genital')" id="btn-genital" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-heart w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Genital Stage (12+ years)</button></li>
+                <li><button onclick="showSection('criticisms')" id="btn-criticisms" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-comment w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Criticisms & Nursing Implications</button></li>
+                <li><button onclick="showSection('flashcards')" id="btn-flashcards" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors border-t border-slate-200 mt-2 locked-section"><i class="fa-solid fa-cards w-6 text-freud nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Flashcards & Mnemonics</button></li>
+                <li><button onclick="showSection('final_quiz_sec')" id="btn-final_quiz_sec" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-graduation-cap w-6 text-amber-500 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Final 50‑Item Exam</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="flex-1 h-full overflow-y-auto bg-slate-100 relative w-full">
+        <div class="fixed top-16 md:top-4 right-4 md:right-8 z-40 flex items-center bg-white/90 backdrop-blur px-4 py-3 rounded-full shadow-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors" onclick="toggleRecallMode()">
+            <span class="mr-3 text-sm font-bold text-slate-700 hidden md:inline"><i class="fa-solid fa-brain text-freud mr-1"></i> Active Recall</span>
+            <button id="recall-toggle" class="w-12 h-6 bg-slate-300 rounded-full relative transition-colors duration-300 focus:outline-none shadow-inner pointer-events-none">
+                <div id="recall-knob" class="w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5 transition-transform duration-300 shadow"></div>
+            </button>
+        </div>
+
+        <div class="p-4 md:p-8 max-w-6xl mx-auto pb-32">
+            <!-- HOME SECTION -->
+            <section id="home" class="content-section flex flex-col items-center justify-center min-h-[80vh] text-center block">
+                <div class="bg-gradient-to-br from-slate-800 to-freud-dark text-white rounded-3xl shadow-2xl p-10 md:p-16 w-full relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mt-10 -mr-10 text-white opacity-5 pointer-events-none"><i class="fa-solid fa-brain text-[20rem]"></i></div>
+                    <div class="relative z-10">
+                        <div class="bg-white/10 backdrop-blur-sm inline-block p-4 rounded-full text-pink-300 mb-6 shadow-sm border border-white/20">
+                            <i class="fa-solid fa-book-open text-5xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-300 mb-2 uppercase tracking-widest">Maternal & Child Health Nursing</h3>
+                        <h1 class="text-4xl md:text-6xl font-black text-white mb-6 leading-tight drop-shadow-md">Freud's Psychosexual Theory</h1>
+                        <div class="bg-white/10 backdrop-blur inline-block px-6 py-3 rounded-full mb-10 border border-white/20">
+                            <p class="text-lg text-white font-medium">Stages of Development | Nursing Application | <strong>Adele Pillitteri, 7e</strong></p>
+                        </div>
+                        <button onclick="unlockFirstSection()" class="bg-slate-600 hover:bg-slate-500 text-white font-black py-4 px-10 rounded-full shadow-xl transition-transform hover:scale-105 text-lg flex items-center mx-auto focus:outline-none">
+                            Begin Module <i class="fa-solid fa-arrow-right ml-3"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 1. OVERVIEW & KEY CONCEPTS -->
+            <section id="overview" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-freud pb-3"><i class="fa-solid fa-chart-simple text-freud mr-4"></i> Overview & Key Concepts</h2>
+                    <p><strong>Sigmund Freud (1856–1939)</strong> proposed the first theory of personality development, emphasizing <span class="reveal-text">unconscious drives and psychosexual stages</span>. Personality is formed through resolution of conflicts at each stage. Key structures: <span class="reveal-text">Id (pleasure principle), Ego (reality principle), Superego (morality).</span></p>
+                    <div class="grid md:grid-cols-2 gap-5 mt-4">
+                        <div class="bg-slate-50 p-4 rounded-xl"><strong>🔍 Key Terms</strong><br><span class="reveal-text">Libido – psychic energy; Fixation – arrested development due to overindulgence or frustration; Regression – returning to earlier stage under stress.</span></div>
+                        <div class="bg-pink-50 p-4 rounded-xl"><strong>📊 Mnemonic (Stages):</strong><br><span class="reveal-text">"O-A-PHA-LA-GE" – Oral, Anal, Phallic, Latency, Genital.</span></div>
+                    </div>
+                    <div class="timeline-bar"></div>
+                    <div class="text-center text-sm font-bold text-freud">Psychosexual Development Timeline</div>
+                    <button onclick="openQuiz('overview')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- 2. ORAL STAGE -->
+            <section id="oral" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-freud pb-3"><i class="fa-solid fa-face-smile text-freud mr-4"></i> Oral Stage (Birth – 1 year)</h2>
+                    <p><strong>Pleasure zone:</strong> Mouth (sucking, biting, swallowing). <strong>Task:</strong> Weaning from breast/bottle. <strong>Fixation behaviors:</strong> Overindulgence → oral receptive (smoking, overeating, gullibility); Frustration → oral aggressive (sarcasm, hostility).</p>
+                    <div class="bg-freud-light p-4 rounded-xl mt-3"><strong>👩‍⚕️ Nursing Implications:</strong> <span class="reveal-text">Provide appropriate oral stimulation (pacifier, teething toys). Avoid rigid weaning. Support breastfeeding or bottle feeding with comfort measures.</span></div>
+                    <button onclick="openQuiz('oral')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- 3. ANAL STAGE -->
+            <section id="anal" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-freud pb-3"><i class="fa-solid fa-toilet text-freud mr-4"></i> Anal Stage (1–3 years)</h2>
+                    <p><strong>Pleasure zone:</strong> Anus (retention and expulsion of feces). <strong>Task:</strong> Toilet training. <strong>Fixation:</strong> Anal retentive (orderly, stubborn, controlling) or anal expulsive (messy, disorganized, aggressive).</p>
+                    <div class="bg-freud-light p-4 rounded-xl mt-3"><strong>👩‍⚕️ Nursing Implications:</strong> <span class="reveal-text">Encourage gradual, positive toilet training; avoid shaming; praise success; allow toddler autonomy.</span></div>
+                    <button onclick="openQuiz('anal')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- 4. PHALLIC STAGE -->
+            <section id="phallic" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-freud pb-3"><i class="fa-solid fa-baby-carriage text-freud mr-4"></i> Phallic Stage (3–6 years)</h2>
+                    <p><strong>Pleasure zone:</strong> Genitals. <strong>Tasks:</strong> Oedipus complex (boys) / Electra complex (girls); identification with same‑sex parent. <strong>Fixation:</strong> Sexual deviance, gender identity issues, vanity.</p>
+                    <div class="bg-freud-light p-4 rounded-xl mt-3"><strong>👩‍⚕️ Nursing Implications:</strong> <span class="reveal-text">Support gender role exploration, answer questions about anatomy honestly, avoid making child feel guilty about masturbation.</span></div>
+                    <button onclick="openQuiz('phallic')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- 5. LATENCY STAGE -->
+            <section id="latency" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-freud pb-3"><i class="fa-solid fa-school text-freud mr-4"></i> Latency Stage (6–12 years)</h2>
+                    <p><strong>Pleasure zone:</strong> Dormant sexual feelings. <strong>Focus:</strong> Socialization, intellectual skills, peer relationships. <strong>Fixation:</strong> Difficulty forming intimate relationships in adulthood.</p>
+                    <div class="bg-freud-light p-4 rounded-xl mt-3"><strong>👩‍⚕️ Nursing Implications:</strong> <span class="reveal-text">Encourage same‑sex friendships, hobbies, school activities. Support cognitive and social development.</span></div>
+                    <button onclick="openQuiz('latency')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- 6. GENITAL STAGE -->
+            <section id="genital" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-freud pb-3"><i class="fa-solid fa-heart text-freud mr-4"></i> Genital Stage (12+ years)</h2>
+                    <p><strong>Pleasure zone:</strong> Genitals (mature sexuality). <strong>Focus:</strong> Establishing intimate relationships, career, family. <strong>Healthy outcome:</strong> Ability to love and work.</p>
+                    <div class="bg-freud-light p-4 rounded-xl mt-3"><strong>👩‍⚕️ Nursing Implications:</strong> <span class="reveal-text">Provide sex education, promote healthy relationships, discuss contraception and STI prevention, support identity formation.</span></div>
+                    <button onclick="openQuiz('genital')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- 7. CRITICISMS & NURSING IMPLICATIONS -->
+            <section id="criticisms" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-freud pb-3"><i class="fa-solid fa-comment text-freud mr-4"></i> Criticisms & Nursing Implications</h2>
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div class="bg-amber-50 p-4 rounded-xl"><strong>⚠️ Criticisms</strong><br><span class="reveal-text">Based on mentally ill patients, not general population; overemphasis on sexuality; lack of scientific evidence; gender bias; limited usefulness for health promotion.</span></div>
+                        <div class="bg-green-50 p-4 rounded-xl"><strong>✅ Contributions</strong><br><span class="reveal-text">First comprehensive personality theory; highlighted importance of early childhood experiences; introduced concepts of unconscious and defense mechanisms.</span></div>
+                    </div>
+                    <div class="bg-freud-light p-4 rounded-xl mt-3"><strong>👩‍⚕️ Nursing Application:</strong> <span class="reveal-text">Use Freud's stages to understand behaviors, but do not rely solely on theory. Incorporate with other developmental theories for holistic care.</span></div>
+                    <button onclick="openQuiz('criticisms')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- 8. FLASHCARDS & MNEMONICS (Interactive flashcards) -->
+            <section id="flashcards" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-freud pb-3"><i class="fa-solid fa-cards text-freud mr-4"></i> Flashcards & Mnemonics</h2>
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <!-- Flashcard component -->
+                        <div class="flashcard p-4 bg-white border border-pink-200" onclick="toggleFlash(this)">
+                            <div class="font-bold text-freud">Q: What is the pleasure source in the Oral stage?</div>
+                            <div class="flash-answer hidden mt-2 text-slate-600">Mouth (sucking, biting, swallowing)</div>
+                        </div>
+                        <div class="flashcard p-4 bg-white border border-pink-200" onclick="toggleFlash(this)">
+                            <div class="font-bold text-freud">Q: What fixation results from harsh toilet training?</div>
+                            <div class="flash-answer hidden mt-2 text-slate-600">Anal retentive (orderly, stubborn, controlling)</div>
+                        </div>
+                        <div class="flashcard p-4 bg-white border border-pink-200" onclick="toggleFlash(this)">
+                            <div class="font-bold text-freud">Q: What is the Oedipus complex?</div>
+                            <div class="flash-answer hidden mt-2 text-slate-600">Boy's unconscious desire for mother and rivalry with father</div>
+                        </div>
+                        <div class="flashcard p-4 bg-white border border-pink-200" onclick="toggleFlash(this)">
+                            <div class="font-bold text-freud">Q: Which stage has dormant sexual energy?</div>
+                            <div class="flash-answer hidden mt-2 text-slate-600">Latency stage (6–12 years)</div>
+                        </div>
+                        <div class="flashcard p-4 bg-white border border-pink-200" onclick="toggleFlash(this)">
+                            <div class="font-bold text-freud">Q: Failure to resolve a stage leads to?</div>
+                            <div class="flash-answer hidden mt-2 text-slate-600">Fixation (remaining stuck in that stage)</div>
+                        </div>
+                        <div class="flashcard p-4 bg-white border border-pink-200" onclick="toggleFlash(this)">
+                            <div class="font-bold text-freud">Q: Electra complex refers to?</div>
+                            <div class="flash-answer hidden mt-2 text-slate-600">Girl's unconscious desire for father and rivalry with mother</div>
+                        </div>
+                    </div>
+                    <div class="mt-6 bg-pink-50 p-4 rounded-xl"><strong>🧠 Stage Mnemonic: "O-A-PHA-LA-GE"</strong><br><span class="reveal-text">Oral, Anal, Phallic, Latency, Genital.</span></div>
+                    <div class="mt-3 bg-pink-50 p-4 rounded-xl"><strong>🧠 Fixation Outcomes: "ORAL: Overindulgence → Receptive; Frustration → Aggressive"</strong><br><span class="reveal-text">Anal: Retentive (orderly) vs Expulsive (messy).</span></div>
+                    <button onclick="openQuiz('flashcards')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Final Exam</button>
+                </div>
+            </section>
+
+            <!-- FINAL EXAM SECTION -->
+            <section id="final_quiz_sec" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 text-center min-h-[60vh] flex flex-col justify-center items-center">
+                    <i class="fa-solid fa-graduation-cap text-8xl text-amber-500 mb-6"></i>
+                    <h2 class="text-4xl font-black text-slate-800 mb-4">Final 50‑Item Exam: Freud's Theory</h2>
+                    <p class="text-lg text-slate-600 mb-8 max-w-2xl">Covers stages, key concepts, nursing implications, and mnemonics. Score ≥75% to pass.</p>
+                    <button onclick="openQuiz('final_quiz')" class="w-full max-w-md bg-slate-800 text-white font-black py-4 rounded-xl shadow-md text-xl">Start Final Exam</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- QUIZ MODAL -->
+    <div id="quiz-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl p-6 md:p-8 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeQuiz()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            <h2 id="quiz-title" class="text-3xl font-black text-slate-800 mb-2"></h2>
+            <div id="quiz-questions-container" class="space-y-4 mt-4"></div>
+            <button id="quiz-submit-btn" onclick="submitQuiz()" class="mt-8 w-full bg-freud text-white font-bold py-4 rounded-xl shadow-lg">Submit Answers</button>
+            <div id="quiz-result-container" class="hidden mt-6 p-4 rounded-xl bg-slate-100"></div>
+        </div>
+    </div>
+
+    <script>
+        let unlockedSections = ['home'];
+        // QUIZZES (10 questions each)
+        const quizzes = {
+            overview: { title: "Overview & Key Concepts", next: "oral", questions: [
+                { q: "Freud's theory emphasizes:", options: ["Social influences", "Unconscious drives and psychosexual stages", "Cognitive development", "Moral reasoning"], ans: 1 },
+                { q: "The part of personality that operates on the pleasure principle is the:", options: ["Ego", "Superego", "Id", "Conscience"], ans: 2 },
+                { q: "Which structure acts as the moral conscience?", options: ["Id", "Ego", "Superego", "Libido"], ans: 2 },
+                { q: "Fixation occurs when:", options: ["A stage is completed successfully", "A child receives too much or too little gratification in a stage", "The ego dominates", "Superego is weak"], ans: 1 },
+                { q: "The mnemonic for Freud's stages is:", options: ["O-A-PHA-LA-GE", "Some People Can Fly", "Trust vs Mistrust", "Erikson's Stages"], ans: 0 },
+                { q: "Libido refers to:", options: ["Death instinct", "Psychic energy", "Aggression", "Social drive"], ans: 1 },
+                { q: "The reality principle is governed by the:", options: ["Id", "Ego", "Superego", "Conscious mind"], ans: 1 },
+                { q: "Freud based his theory primarily on:", options: ["Healthy children", "Mentally disturbed adults", "Animal studies", "Cross‑cultural research"], ans: 1 },
+                { q: "Regression means:", options: ["Moving to next stage", "Returning to an earlier stage under stress", "Fixing a stage", "Permanent arrest"], ans: 1 },
+                { q: "The first psychosexual stage is:", options: ["Anal", "Oral", "Phallic", "Latency"], ans: 1 }
+            ]},
+            oral: { title: "Oral Stage", next: "anal", questions: [
+                { q: "Oral stage occurs from:", options: ["0–1 year", "1–3 years", "3–6 years", "6–12 years"], ans: 0 },
+                { q: "Primary pleasure source in oral stage is:", options: ["Mouth", "Anus", "Genitals", "Social interaction"], ans: 0 },
+                { q: "Overindulgence during oral stage may lead to:", options: ["Anal retentive traits", "Oral receptive personality (smoking, overeating)", "Guilt", "Inferiority"], ans: 1 },
+                { q: "Weaning is the major task of which stage?", options: ["Anal", "Phallic", "Oral", "Latency"], ans: 2 },
+                { q: "A sarcastic, hostile adult may have fixation at the:", options: ["Oral aggressive", "Oral receptive", "Anal retentive", "Phallic"], ans: 0 },
+                { q: "Nursing intervention for oral stage includes:", options: ["Strict toilet training", "Provide pacifier or teething toys", "Encourage independence", "Sex education"], ans: 1 },
+                { q: "Which of the following is an oral fixation behavior?", options: ["Orderliness", "Nail biting", "Perfectionism", "Vanity"], ans: 1 },
+                { q: "The infant's main source of tension reduction is:", options: ["Elimination", "Sucking", "Playing", "Walking"], ans: 1 },
+                { q: "Failure to resolve oral stage may result in:", options: ["Difficulty with trust", "Gender identity issues", "Messiness", "Sexual deviance"], ans: 0 },
+                { q: "Oral receptive personality is characterized by:", options: ["Aggression", "Gullibility and dependency", "Stubbornness", "Vanity"], ans: 1 }
+            ]},
+            anal: { title: "Anal Stage", next: "phallic", questions: [
+                { q: "Anal stage occurs from:", options: ["0–1 year", "1–3 years", "3–6 years", "6–12 years"], ans: 1 },
+                { q: "Toilet training is the primary task of the:", options: ["Oral stage", "Anal stage", "Phallic stage", "Latency stage"], ans: 1 },
+                { q: "An adult who is excessively neat and rigid may have an:", options: ["Oral fixation", "Anal retentive fixation", "Anal expulsive fixation", "Phallic fixation"], ans: 1 },
+                { q: "The pleasure zone in the anal stage is:", options: ["Mouth", "Anus", "Genitals", "Skin"], ans: 1 },
+                { q: "Nursing care during anal stage should:", options: ["Force toilet training", "Use praise and avoid shaming", "Ignore accidents", "Punish regression"], ans: 1 },
+                { q: "Anal expulsive personality is associated with:", options: ["Orderliness", "Messiness and disorganization", "Dependency", "Sexual inhibition"], ans: 1 },
+                { q: "Which of the following is an example of anal retentive trait?", options: ["Generosity", "Punctuality", "Impulsivity", "Carelessness"], ans: 1 },
+                { q: "Freud believed that harsh toilet training leads to:", options: ["Oral fixation", "Anal fixation", "Phallic fixation", "Latency issues"], ans: 1 },
+                { q: "A child who refuses to have bowel movements may be expressing:", options: ["Autonomy vs shame", "Initiative vs guilt", "Industry vs inferiority", "Identity vs confusion"], ans: 0 },
+                { q: "The anal stage corresponds to Erikson's stage of:", options: ["Trust vs mistrust", "Autonomy vs shame and doubt", "Initiative vs guilt", "Industry vs inferiority"], ans: 1 }
+            ]},
+            phallic: { title: "Phallic Stage", next: "latency", questions: [
+                { q: "Phallic stage occurs from:", options: ["0–1 year", "1–3 years", "3–6 years", "6–12 years"], ans: 2 },
+                { q: "The Oedipus complex involves:", options: ["Girl's attraction to father", "Boy's attraction to mother", "Boy's attraction to father", "Girl's attraction to mother"], ans: 1 },
+                { q: "Electra complex is associated with:", options: ["Boys", "Girls", "Both", "Latency"], ans: 1 },
+                { q: "Resolution of the Oedipus complex occurs through:", options: ["Regression", "Identification with same‑sex parent", "Fixation", "Repression"], ans: 1 },
+                { q: "During the phallic stage, children become aware of:", options: ["Gender differences", "Toilet training", "Social rules", "Abstract thinking"], ans: 0 },
+                { q: "Nursing implication for phallic stage includes:", options: ["Avoid questions about anatomy", "Answer questions honestly, avoid shaming masturbation", "Ignore sexual curiosity", "Punish curiosity"], ans: 1 },
+                { q: "Fixation at the phallic stage may lead to:", options: ["Oral dependency", "Sexual deviance or vanity", "Messiness", "Withdrawal"], ans: 1 },
+                { q: "Castration anxiety is a concept in:", options: ["Oral stage", "Anal stage", "Phallic stage", "Genital stage"], ans: 2 },
+                { q: "Penis envy is a concept related to:", options: ["Boys in phallic stage", "Girls in phallic stage", "Latency stage", "Genital stage"], ans: 1 },
+                { q: "The latency stage follows the:", options: ["Oral stage", "Anal stage", "Phallic stage", "Genital stage"], ans: 2 }
+            ]},
+            latency: { title: "Latency Stage", next: "genital", questions: [
+                { q: "Latency stage occurs from:", options: ["1–3 years", "3–6 years", "6–12 years", "12+ years"], ans: 2 },
+                { q: "Sexual energy during latency is:", options: ["Very active", "Dormant", "Focused on genitals", "Intense"], ans: 1 },
+                { q: "The main focus of latency stage is:", options: ["Weaning", "Toilet training", "Socialization and skill development", "Mature sexuality"], ans: 2 },
+                { q: "Fixation during latency may result in:", options: ["Difficulty forming intimate relationships", "Messiness", "Oral habits", "Gender confusion"], ans: 0 },
+                { q: "Nursing interventions for latency stage include:", options: ["Encourage peer friendships and hobbies", "Provide pacifiers", "Discuss puberty", "Toilet training"], ans: 0 },
+                { q: "Latency stage corresponds to which school period?", options: ["Preschool", "Elementary school", "High school", "College"], ans: 1 },
+                { q: "During latency, children typically prefer:", options: ["Same‑sex friends", "Opposite‑sex friends", "Adult company", "Solitary play"], ans: 0 },
+                { q: "Which of the following is NOT a characteristic of latency?", options: ["Peer relationships", "Intellectual curiosity", "Sexual exploration", "Skill acquisition"], ans: 2 },
+                { q: "The latency stage ends with:", options: ["Menarche", "Onset of puberty", "Toilet training", "Weaning"], ans: 1 },
+                { q: "Erikson's stage corresponding to latency is:", options: ["Trust vs mistrust", "Initiative vs guilt", "Industry vs inferiority", "Identity vs role confusion"], ans: 2 }
+            ]},
+            genital: { title: "Genital Stage", next: "criticisms", questions: [
+                { q: "Genital stage begins at:", options: ["3–6 years", "6–12 years", "12+ years", "Adulthood"], ans: 2 },
+                { q: "The primary goal of the genital stage is:", options: ["Establish mature intimate relationships", "Control elimination", "Wean from breast", "Learn social rules"], ans: 0 },
+                { q: "Failure to resolve earlier stages may affect:", options: ["Toilet training", "Ability to love and work", "Language development", "Motor skills"], ans: 1 },
+                { q: "Nursing care during genital stage includes:", options: ["Sex education, STI prevention, healthy relationship counseling", "Toilet training", "Pacifier use", "Gender identity play"], ans: 0 },
+                { q: "In the genital stage, libido is focused on:", options: ["Mouth", "Anus", "Genitals (mature sexuality)", "Social activities"], ans: 2 },
+                { q: "Which of the following is a healthy outcome of genital stage?", options: ["Fixation", "Regression", "Capacity for intimacy", "Dependency"], ans: 2 },
+                { q: "The genital stage corresponds to:", options: ["Infancy", "Adolescence and adulthood", "Preschool", "School age"], ans: 1 },
+                { q: "According to Freud, a well‑adjusted adult has successfully navigated:", options: ["Only genital stage", "All five stages", "Only oral stage", "Only anal stage"], ans: 1 },
+                { q: "The genital stage is characterized by:", options: ["Reawakening of sexual urges with mature orientation", "Suppression of sexuality", "Focus on same‑sex friendships", "Toilet training"], ans: 0 },
+                { q: "Sexual identity is solidified during:", options: ["Oral stage", "Anal stage", "Phallic stage", "Genital stage"], ans: 3 }
+            ]},
+            criticisms: { title: "Criticisms & Nursing Implications", next: "flashcards", questions: [
+                { q: "A major criticism of Freud's theory is:", options: ["It is supported by robust research", "It overemphasizes sexuality and lacks evidence", "It focuses only on healthy development", "It is applicable only to females"], ans: 1 },
+                { q: "Freud's theory has limited usefulness in health promotion because:", options: ["It is based on illness rather than wellness", "It is easy to apply", "It is very practical", "It focuses on cognition"], ans: 0 },
+                { q: "Which statement about Freud's theory is TRUE?", options: ["It is purely based on scientific experiments", "It introduced the importance of early childhood", "It is universally accepted in nursing", "It focuses on social learning"], ans: 1 },
+                { q: "The nurse should use Freud's theory:", options: ["As the sole guide for practice", "In combination with other developmental theories", "Only for male patients", "Only for children under 5"], ans: 1 },
+                { q: "One positive contribution of Freud's theory is:", options: ["It is culturally universal", "It highlighted the role of unconscious processes", "It is gender‑neutral", "It is highly predictive"], ans: 1 },
+                { q: "Freud's theory is considered gender‑biased because:", options: ["It was developed by a male", "It focuses only on males", "It has concepts like 'penis envy' and neglects female development", "It is only about boys"], ans: 2 },
+                { q: "A nurse who understands fixation may help parents:", options: ["Prevent overindulgence or frustration", "Ignore developmental stages", "Accelerate toilet training", "Discourage all oral activities"], ans: 0 },
+                { q: "Which of the following is NOT a criticism of Freud?", options: ["Lack of empirical evidence", "Overemphasis on sexuality", "Based on clinical observation of patients", "It was developed in the 21st century"], ans: 3 },
+                { q: "Freud's theory is useful in MCN for:", options: ["Understanding possible behavioral origins", "Prescribing medications", "Diagnosing diseases", "Surgical interventions"], ans: 0 },
+                { q: "The nurse should recognize that fixation:", options: ["Is inevitable", "Can be prevented by balanced gratification", "Only occurs in the oral stage", "Has no effect on adulthood"], ans: 1 }
+            ]},
+            flashcards: { title: "Flashcards & Mnemonics", next: "final_quiz_sec", questions: [
+                { q: "The mnemonic 'O-A-PHA-LA-GE' stands for:", options: ["Erikson's stages", "Freud's psychosexual stages", "Piaget's stages", "Kohlberg's stages"], ans: 1 },
+                { q: "In the mnemonic, 'Parrots' represents:", options: ["Oral", "Anal", "Phallic", "Latency"], ans: 2 },
+                { q: "What is the fixation outcome for harsh toilet training?", options: ["Oral receptive", "Anal retentive", "Anal expulsive", "Phallic fixation"], ans: 1 },
+                { q: "Which mnemonic helps recall oral fixation outcomes?", options: ["ORAL: Overindulgence → Receptive; Frustration → Aggressive", "ANAL: Orderly vs Messy", "PHALLIC: Oedipus/Electra", "LATENCY: Dormant"], ans: 0 },
+                { q: "The flashcard question 'What is the Oedipus complex?' answer is:", options: ["Girl's desire for father", "Boy's desire for mother", "Fear of castration", "Penis envy"], ans: 1 },
+                { q: "Which stage mnemonic includes 'Love' for Genital?", options: ["O-A-PHA-LA-GE", "Trust vs Mistrust", "OAPLG", "All of the above"], ans: 0 },
+                { q: "A flashcard for 'Electra complex' refers to:", options: ["Girl's attraction to father", "Boy's attraction to mother", "Resolution of latency", "Fixation"], ans: 0 },
+                { q: "The mnemonic for anal fixation traits is:", options: ["Retentive (orderly) vs Expulsive (messy)", "Oral receptive vs aggressive", "Phallic vs Latency", "Genital vs Oral"], ans: 0 },
+                { q: "Which mnemonic helps recall the stages in order?", options: ["O-A-PHA-LA-GE", "Some People Can Fly", "H.A.M.S.", "C.T.S.P."], ans: 0 },
+                { q: "The term 'fixation' means:", options: ["Moving to next stage", "Arrested development at a stage", "Regression", "Identification"], ans: 1 }
+            ]}
+        };
+        // Build final 50-item exam
+        let finalQ = [];
+        for(let sec of ['overview','oral','anal','phallic','latency','genital','criticisms','flashcards']) {
+            finalQ.push(...quizzes[sec].questions.slice(0,6));
+        }
+        while(finalQ.length < 50) finalQ.push({ q: "According to Freud, the driving force behind all human behavior is:", options: ["Sexual energy (libido)", "Social needs", "Cognitive growth", "Moral reasoning"], ans: 0 });
+        quizzes.final_quiz = { title: "Final 50‑Item Exam: Freud's Psychosexual Theory", next: null, questions: finalQ };
+
+        let currentQuiz = null;
+        function toggleFlash(el) { const ans = el.querySelector('.flash-answer'); if(ans) ans.classList.toggle('hidden'); }
+        function unlockFirstSection() { if(!unlockedSections.includes('overview')) { unlockedSections.push('overview'); updateSidebarUI(); } showSection('overview'); }
+        function showSection(sectionId) {
+            if (!unlockedSections.includes(sectionId) && sectionId !== 'home') { alert("Complete the Active Recall Quiz at the bottom of the previous section to unlock."); return; }
+            document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(sectionId)?.classList.remove('hidden');
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('bg-freud-light','text-freud-dark','border-r-4','border-freud-dark'));
+            const activeBtn = document.getElementById('btn-'+sectionId);
+            if(activeBtn) activeBtn.classList.add('bg-freud-light','text-freud-dark','border-r-4','border-freud-dark');
+            if(window.innerWidth < 768) document.getElementById('sidebar').classList.add('hidden');
+        }
+        function updateSidebarUI() {
+            const sections = ['home','overview','oral','anal','phallic','latency','genital','criticisms','flashcards','final_quiz_sec'];
+            sections.forEach(sec => {
+                const btn = document.getElementById('btn-'+sec);
+                if(!btn) return;
+                const lock = btn.querySelector('.fa-lock'), icon = btn.querySelector('.nav-icon');
+                if(unlockedSections.includes(sec) || sec==='home') { btn.classList.remove('locked-section'); if(lock) lock.classList.add('hidden'); if(icon) icon.classList.remove('hidden'); }
+                else { btn.classList.add('locked-section'); if(lock) lock.classList.remove('hidden'); if(icon) icon.classList.add('hidden'); }
+            });
+        }
+        function openQuiz(sectionId) { currentQuiz = sectionId; const qd = quizzes[sectionId]; if(!qd) return; document.getElementById('quiz-title').innerHTML = qd.title; const container = document.getElementById('quiz-questions-container'); container.innerHTML = ''; qd.questions.forEach((q, idx) => { let html = `<div class="bg-slate-50 p-4 rounded-xl mb-4"><p class="font-bold mb-3">${idx+1}. ${q.q}</p><div class="space-y-2">`; q.options.forEach((opt,oi) => { html += `<label class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white cursor-pointer"><input type="radio" name="q${idx}" value="${oi}" class="form-radio text-freud"><span>${opt}</span></label>`; }); html += `</div><div class="feedback-${idx} text-sm mt-2 hidden"></div></div>`; container.innerHTML += html; }); document.getElementById('quiz-submit-btn').classList.remove('hidden'); document.getElementById('quiz-result-container').classList.add('hidden'); document.getElementById('quiz-modal').classList.remove('hidden'); }
+        function closeQuiz() { document.getElementById('quiz-modal').classList.add('hidden'); }
+        function submitQuiz() {
+            const qd = quizzes[currentQuiz];
+            if(!qd) return;
+            let score = 0;
+            for(let i=0; i<qd.questions.length; i++) {
+                const sel = document.querySelector(`input[name="q${i}"]:checked`);
+                if(sel && parseInt(sel.value)===qd.questions[i].ans) score++;
+                const fbDiv = document.querySelector(`.feedback-${i}`);
+                if(fbDiv){
+                    fbDiv.classList.remove('hidden');
+                    const correctTxt = qd.questions[i].options[qd.questions[i].ans];
+                    if(sel && parseInt(sel.value)===qd.questions[i].ans) { fbDiv.innerHTML='<span class="text-green-700">✓ Correct</span>'; fbDiv.parentElement?.classList.add('quiz-feedback-correct'); }
+                    else { const selectedTxt = sel? qd.questions[i].options[parseInt(sel.value)]:"No answer"; fbDiv.innerHTML=`<span class="text-red-700">✗ Incorrect. Correct: ${correctTxt}. You answered: ${selectedTxt}</span>`; fbDiv.parentElement?.classList.add('quiz-feedback-wrong'); }
+                }
+            }
+            let percent = (score/qd.questions.length)*100;
+            let resultDiv = document.getElementById('quiz-result-container');
+            document.getElementById('quiz-submit-btn').classList.add('hidden');
+            resultDiv.classList.remove('hidden');
+            if(percent>=75){
+                if(currentQuiz==='final_quiz'){ resultDiv.innerHTML=`<div class="text-green-600 text-4xl text-center">🎉 Excellent! Score ${score}/${qd.questions.length} (${percent}%)<br>You mastered Freud's Theory</div><button onclick="closeQuiz()" class="mt-4 bg-freud text-white px-6 py-2 rounded-xl">Close</button>`; return; }
+                if(quizzes[currentQuiz].next && !unlockedSections.includes(quizzes[currentQuiz].next)) unlockedSections.push(quizzes[currentQuiz].next);
+                if(quizzes[currentQuiz].next === 'flashcards' && !unlockedSections.includes('final_quiz_sec')) unlockedSections.push('final_quiz_sec');
+                updateSidebarUI();
+                resultDiv.innerHTML=`<div class="text-green-600 text-3xl text-center">✅ Passed! (${score}/${qd.questions.length})</div><button onclick="closeQuiz(); showSection('${quizzes[currentQuiz].next}')" class="mt-4 bg-green-600 text-white px-6 py-2 rounded-xl">Unlock Next Section</button>`;
+            } else { resultDiv.innerHTML=`<div class="text-red-600 text-3xl text-center">❌ Failed: ${score}/${qd.questions.length} (${percent}%)<br>Need 75%</div><button onclick="openQuiz('${currentQuiz}')" class="mt-4 bg-slate-600 text-white px-6 py-2 rounded-xl">Try Again</button>`; }
+        }
+        function toggleRecallMode() { const active = !document.body.classList.contains('recall-mode'); const toggle=document.getElementById('recall-toggle'),knob=document.getElementById('recall-knob'); if(active){ document.body.classList.add('recall-mode'); toggle.classList.add('bg-freud-dark'); knob.classList.add('translate-x-6'); } else { document.body.classList.remove('recall-mode'); toggle.classList.remove('bg-freud-dark'); knob.classList.remove('translate-x-6'); } }
+        function toggleMobileMenu() { const s=document.getElementById('sidebar'); if(s.classList.contains('hidden')) s.classList.remove('hidden','flex','absolute','h-full','z-50'); else s.classList.add('hidden'); }
+        document.addEventListener('DOMContentLoaded', () => { updateSidebarUI(); document.querySelectorAll('.reveal-text').forEach(el => el.addEventListener('click', function(){ if(document.body.classList.contains('recall-mode')) this.classList.toggle('revealed'); })); });
+    </script>
+</body>
+</html>
